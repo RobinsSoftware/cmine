@@ -27,10 +27,10 @@ src/cmine.c
 #include <cmine/cmine.h>
 #include <cmine/out.h>
 #include <cmine/thread.h>
-#include <cmine/data/hashmap.h>
+#include <cmine/hashmap.h>
 #include <cmine/memory.h>
-#include <cmine/data/arraylist.h>
-#include <cmine/data/string.h>
+#include <cmine/arraylist.h>
+#include <cmine/string.h>
 
 #include "internal.h"
 

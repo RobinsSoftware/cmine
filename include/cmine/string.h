@@ -15,28 +15,24 @@ limitations under the License.
 
 CMine by Robins Software <3
 https://github.com/RobinsSoftware/cmine
-src/data/string.c
+include/cmine/string.h
 
 */
 
-#include <string.h>
-#include <ctype.h>
+#ifndef CM_STRING_H
+#define CM_STRING_H
 
-#include <cmine/data/string.h>
-
-String string_trim(String str)
+#ifdef __cplusplus
+extern "C"
 {
-  String end;
+#endif
 
-  while(isspace((unsigned char)*str)) str++;
+    typedef char *String;
 
-  if(*str == 0)  // All spaces?
-    return str;
+    extern String string_trim(String str);
 
-  end = str + strlen(str) - 1;
-  while(end > str && isspace((unsigned char)*end)) end--;
-
-  end[1] = '\0';
-
-  return str;
+#ifdef __cplusplus
 }
+#endif
+
+#endif

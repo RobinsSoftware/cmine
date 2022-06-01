@@ -15,7 +15,7 @@ limitations under the License.
 
 CMine by Robins Software <3
 https://github.com/RobinsSoftware/cmine
-include/cmine/data/arraylist.h
+include/cmine/arraylist.h
 
 */
 

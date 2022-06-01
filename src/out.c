@@ -155,6 +155,7 @@ void print_debug(char *message)
     printf("DEBUG: %s", message);
 }
 
-void end_line() {
+void end_line()
+{
     printf("%s\n", font_mode(RESET));
 }

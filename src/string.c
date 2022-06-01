@@ -15,24 +15,20 @@ limitations under the License.
 
 CMine by Robins Software <3
 https://github.com/RobinsSoftware/cmine
-include/cmine/data/string.h
+src/string.c
 
 */
 
-#ifndef CM_STRING_H
-#define CM_STRING_H
+#include <string.h>
+#include <ctype.h>
+#include <stdlib.h>
 
-#ifdef __cplusplus
-extern "C"
+#include <cmine/string.h>
+
+// taken from stackoverflow
+String string_trim(String str)
 {
-#endif
+    // BROKEN: BUS ERROR
 
-    typedef char *String;
-
-    extern String string_trim(String str);
-
-#ifdef __cplusplus
+    return NULL;
 }
-#endif
-
-#endif

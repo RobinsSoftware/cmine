@@ -20,7 +20,7 @@ src/thread.c
 */
 
 #include <cmine/thread.h>
-#include <cmine/data/arraylist.h>
+#include <cmine/arraylist.h>
 #include <cmine/memory.h>
 #include <cmine/out.h>
 

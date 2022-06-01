@@ -15,7 +15,7 @@ limitations under the License.
 
 CMine by Robins Software <3
 https://github.com/RobinsSoftware/cmine
-include/cmine/data/hashmap.h
+include/cmine/hashmap.h
 
 */
 
@@ -24,7 +24,7 @@ include/cmine/data/hashmap.h
 
 #include <stdbool.h>
 
-#include <cmine/data/arraylist.h>
+#include <cmine/arraylist.h>
 
 #ifdef __cplusplus
 extern "C"

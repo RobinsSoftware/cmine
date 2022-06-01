@@ -1,7 +1,3 @@
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-
 /*
 Copyright 2022 ROBINS SOFTWARE
 
@@ -23,15 +19,21 @@ src/in.c
 
 */
 
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+
 #include <cmine/thread.h>
-#include <cmine/data/hashmap.h>
-#include <cmine/data/string.h>
+#include <cmine/hashmap.h>
+#include <cmine/out.h>
+#include <cmine/string.h>
 
 #include "internal.h"
 
 HashMap commands;
 
-void _load_default_commands() {
+void _load_default_commands()
+{
     hashmap_put(commands, "quit", _quit_console_command);
 }
 
@@ -45,9 +47,15 @@ Thread _input_listener(void *arg)
     {
         fgets(line, 1024, stdin);
         String arg0 = strtok(line, " ");
-        
-        ConsoleCommand command = hashmap_get(commands, arg0);
-        command(string_trim(line));
-    }    
-}
+        arg0 = strtok(arg0, "\n");
 
+        ConsoleCommand command = hashmap_get(commands, arg0);
+
+        if (command != NULL)
+            command(arg0);
+        else
+            println("Command not found.");
+    }
+
+    return NULL;
+}

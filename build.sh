@@ -12,3 +12,4 @@ cd ../../
 
 # build project
 cmake ./
+make

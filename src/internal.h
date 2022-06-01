@@ -1,6 +1,3 @@
-#ifndef UTIL_INTERNAL_H
-#define UTIL_INTERNAL_H
-
 /*
 Copyright 2022 ROBINS SOFTWARE
 
@@ -22,8 +19,12 @@ src/internal.h
 
 */
 
+#ifndef UTIL_INTERNAL_H
+#define UTIL_INTERNAL_H
+
 #include <cmine/thread.h>
 #include <cmine/in.h>
+#include <cmine/socket.h>
 
 #ifdef __cplusplus
 extern "C"
@@ -43,6 +44,8 @@ extern "C"
 
     // commands
     extern ConsoleCommand _quit_console_command(String input);
+
+    extern void _parse_packet(ClientData data, uint8_t *buffer, uint8_t *return_buffer, size_t packet_max);
 
 #ifdef __cplusplus
 }

@@ -22,7 +22,7 @@ src/memory.c
 #include <stdlib.h>
 #include <stdio.h>
 
-#include <cmine/data/arraylist.h>
+#include <cmine/arraylist.h>
 #include <cmine/memory.h>
 #include <cmine/out.h>
 

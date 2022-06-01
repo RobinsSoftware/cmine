@@ -15,15 +15,18 @@ limitations under the License.
 
 CMine by Robins Software <3
 https://github.com/RobinsSoftware/cmine
-src/data/hashmap.c
+src/hashmap.c
 
 */
 
 #include <string.h>
+#include <stdio.h>
 
-#include <cmine/data/arraylist.h>
-#include <cmine/data/hashmap.h>
+#include <cmine/arraylist.h>
+#include <cmine/out.h>
+#include <cmine/hashmap.h>
 #include <cmine/memory.h>
+#include <cmine/string.h>
 
 HashMapNode _hashmap_get_node(HashMap map, void *key)
 {
@@ -31,7 +34,7 @@ HashMapNode _hashmap_get_node(HashMap map, void *key)
     {
         HashMapNode node = (HashMapNode)arraylist_get(map->list, i);
 
-        if ((map->string && strcmp((char *)node->key, (char *)key)) || !map->string && node->key == key)
+        if (((map->string && strcmp((char *) node->key, (char *) key) == 0) || (!map->string && node->key == key)))
             return node;
     }
 
