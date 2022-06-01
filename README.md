@@ -10,8 +10,8 @@ If you are interested in contributing to CMine through code or feedback, feel fr
 * ~~Import libraries from old projects to handle memory management, etc.~~
 * ~~Create thread & socket libraries.~~
 * ~~Get console commands to work & implement safe server shutdown.~~
-* Create a system for processing inbound and outbound packets.
-* Working MOTD from file.
+* ~~Create a system for processing inbound and outbound packets.~~
+* ~~Working MOTD~~ from file.
 * Spawn players in a void.
 * Send & receive chat, command parsing.
 
