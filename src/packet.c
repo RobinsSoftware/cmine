@@ -25,6 +25,8 @@ src/packet.c
 #include <string.h>
 #include <stdio.h>
 
+#include <json.h>
+
 #include <cmine/packet.h>
 #include <cmine/socket.h>
 #include <cmine/out.h>
@@ -59,8 +61,27 @@ void _status_response_packet(ClientData client) // cb 0x00
     uint8_t buffer[PACKET_MAX];
     int cursor = varint_write(0x00, buffer);
 
-    String motd = "{\"version\": {\"name\": \"CMine 1.18.2\",\"protocol\": 758},\"players\":{\"max\": 10,\"online\": 1,\"sample\": [{\"name\": \"lola_0x4dd\",\"id\": \"f89dd8c0-47d4-47e5-aece-6fdc06dd9b6d\"}]},\"description\": {\"text\": \"CMine Test\"}}";
-    cursor += string_write(motd, buffer + cursor);
+    struct json_object *status = json_object_new_object();
+
+    // update players
+    struct json_object *players = json_object_new_object();
+
+    json_object_object_add(players, "max", json_object_new_int(24));
+    json_object_object_add(players, "online", json_object_new_int(0));
+    json_object_object_add(status, "players", players);
+
+    // description
+    struct json_object *description = json_object_new_object();
+    json_object_object_add(description, "text", json_object_new_string("CMine Test"));
+    json_object_object_add(status, "description", description);
+
+    // version
+    struct json_object *version = json_object_new_object();
+    json_object_object_add(version, "name", json_object_new_string("CMine 1.18.2"));
+    json_object_object_add(version, "protocol", json_object_new_int(758));
+    json_object_object_add(status, "version", version);
+
+    cursor += string_write((String)json_object_to_json_string_ext(status, JSON_C_TO_STRING_PLAIN), buffer + cursor);
 
     _send_raw_packet(client, buffer, cursor);
 }
@@ -91,10 +112,13 @@ void _login_disconnect(ClientData client, String message)
 {
     uint8_t buffer[PACKET_MAX];
     int cursor = varint_write(0x00, buffer);
-    
-    struct json_object *json, *msg;
 
-    cursor+= string_write("{\"text\":\"Packets are working\n <3\"}", buffer + cursor);
+    struct json_object *json;
+
+    json = json_object_new_object();
+    json_object_object_add(json, "text", json_object_new_string(message));
+
+    cursor += string_write((String)json_object_to_json_string_ext(json, JSON_C_TO_STRING_PLAIN), buffer + cursor);
 
     if (_debug)
     {
@@ -117,7 +141,7 @@ void _login_start(ClientData client, uint8_t *buffer) // cb 0x00
         end_line();
     }
 
-    _login_disconnect(client, "");
+    _login_disconnect(client, "Failed to connect.");
 
     client->terminate = true; // temp
 }

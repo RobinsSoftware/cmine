@@ -50,6 +50,7 @@ extern "C"
 
     extern void _send_raw_packet(ClientData client, uint8_t *buffer, size_t size);
 
+    extern void _update_status();
 
 #ifdef __cplusplus
 }

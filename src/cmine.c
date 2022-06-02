@@ -67,6 +67,8 @@ int main(int argc, String argv[])
     printf("%s:%d.", _address, _port);
     end_line();
 
+    void _update_status();
+
     async_once((Thread) &_socket_init, NULL, 0);
     async_once((Thread) &_input_listener, NULL, 0);
 
