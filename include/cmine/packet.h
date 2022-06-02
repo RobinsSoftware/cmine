@@ -34,6 +34,8 @@ extern "C"
 {
 #endif
 
+#define PACKET_MAX 4096
+
     typedef enum PacketState
     {
         HANDSHAKE,
@@ -46,11 +48,8 @@ extern "C"
     {
         PacketState state;
         int protocol, cid;
-        size_t return_size;
-        bool return_send, terminate;
+        bool terminate;
     } * ClientData;
-
-    typedef void (*SBPacket)(ClientData *client, uint8_t *buffer, uint8_t *return_buffer, size_t packet_max);
 
 #ifdef __cplusplus
 }

@@ -34,11 +34,11 @@ extern "C"
 
 extern int varint_size(int32_t input);
 extern int varint_write(int32_t input, uint8_t* buffer);
-extern int varint_read(int32_t* output, uint8_t* buffer, size_t buflen);
+extern int varint_read(int32_t* output, uint8_t* buffer);
 extern int varlong_size(int64_t input);
 extern int varlong_write(int64_t input, uint8_t* buffer);
-extern int varlong_read(int64_t* output, uint8_t* buffer, size_t buflen);
-extern int string_read(String buffer, String output, size_t buflen);
+extern int varlong_read(int64_t* output, uint8_t* buffer);
+extern int string_read(String buffer, String output);
 extern int string_write(const String source, String output);
 
 #ifdef __cplusplus

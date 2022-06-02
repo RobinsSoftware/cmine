@@ -45,7 +45,10 @@ extern "C"
     // commands
     extern ConsoleCommand _quit_console_command(String input);
 
-    extern void _parse_packet(ClientData data, uint8_t *buffer, uint8_t *return_buffer, size_t packet_max);
+    extern void _parse_packet(ClientData data, uint8_t *buffer);
+
+    extern void _send_raw_packet(ClientData client, uint8_t *buffer, size_t size);
+
 
 #ifdef __cplusplus
 }

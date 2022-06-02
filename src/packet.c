@@ -31,76 +31,107 @@ src/packet.c
 #include <cmine/out.h>
 #include <cmine/packetdata.h>
 
-SBPacket _handshake_packet(ClientData client, uint8_t *buffer, uint8_t *return_buffer, size_t packet_max)
+#include "internal.h"
+
+// HANDSHAKE
+
+void _handshake_packet(ClientData client, uint8_t *buffer)
 {
     int protocol;
-    int cursor = varint_read(&protocol, buffer, packet_max);
+    int cursor = varint_read(&protocol, buffer);
 
-    char address[255];
-    cursor += string_read((String)(buffer + cursor), address, packet_max - cursor);
+    char address[256];
+    cursor += string_read((String)(buffer + cursor), address);
 
     short port = ((unsigned short)buffer[cursor] << 8) | (unsigned char)buffer[cursor + 1];
     cursor += 2;
 
     int next;
-    cursor += varint_read(&next, buffer + cursor, packet_max - cursor);
-    
+    cursor += varint_read(&next, buffer + cursor);
+
     client->state = next;
-
-    return NULL;
 }
 
-SBPacket _status_request_packet(ClientData client, uint8_t *buffer, uint8_t *return_buffer, size_t packet_max)
+// STATUS
+
+void _status_response_packet(ClientData client) // cb 0x00
 {
-    String motd = "{\"version\": {\"name\": \"CMine 1.18.2\",\"protocol\": 758},\"players\": {\"max\": 10,\"online\": 1,\"sample\": [{\"name\": \"lola_0x4dd\",\"id\": \"f89dd8c0-47d4-47e5-aece-6fdc06dd9b6d\"}]},\"description\": {\"text\": \"CMine Test\"}}";
-    
-    int cursor = varint_write(0x00, (return_buffer + cursor));
-    cursor += string_write(motd, (String) (return_buffer + cursor));
+    uint8_t buffer[PACKET_MAX];
+    int cursor = varint_write(0x00, buffer);
 
-    client->return_send = true;
-    client->return_size = cursor;
+    String motd = "{\"version\": {\"name\": \"CMine 1.18.2\",\"protocol\": 758},\"players\":{\"max\": 10,\"online\": 1,\"sample\": [{\"name\": \"lola_0x4dd\",\"id\": \"f89dd8c0-47d4-47e5-aece-6fdc06dd9b6d\"}]},\"description\": {\"text\": \"CMine Test\"}}";
+    cursor += string_write(motd, (String)(buffer + cursor));
 
-    return NULL;
+    _send_raw_packet(client, buffer, cursor);
 }
 
-SBPacket _status_ping(ClientData client, uint8_t *buffer, uint8_t *return_buffer, size_t packet_max)
+void _status_request_packet(ClientData client, uint8_t *buffer) // sb 0x00
 {
-    int cursor = varint_write(0x01, return_buffer);
+    _status_response_packet(client);
+}
 
-    for (int i = 0; i < 8; i++)
-        return_buffer[i + cursor++] = buffer[i];
+void _status_pong(ClientData client) // cb 0x01
+{
+    uint8_t buffer[PACKET_MAX];
+    int cursor = varint_write(0x01, buffer);
+    cursor += 8;
 
-    client->return_send = true;
-    client->return_size = cursor; 
+    _send_raw_packet(client, buffer, cursor);
+}
+
+void _status_ping(ClientData client, uint8_t *buffer) // sb 0x01
+{
+    _status_pong(client);
     client->terminate = true;
-
-    return NULL;
 }
 
-void _parse_packet(ClientData client, uint8_t *buffer, uint8_t *return_buffer, size_t packet_max)
+// LOGIN
+
+void _login_start(ClientData client, uint8_t *buffer)
 {
-    int length;
-    int cursor = varint_read(&length, buffer, packet_max);
-    int packet;
-    cursor += varint_read(&packet, buffer + cursor, packet_max - cursor);
+    char username[17];
+    string_read((String)buffer, username);
+
+    print("Login request from: ");
+    printf("%s", username);
+    end_line();
+
+    client->terminate = true; // temp
+}
+
+// Packet routing
+
+void _parse_packet(ClientData client, uint8_t *buffer)
+{
+    int length, packet;
+    int cursor = varint_read(&length, buffer);
+    cursor += varint_read(&packet, buffer + cursor);
+
+    uint8_t *data = buffer + cursor;
 
     switch (client->state)
     {
     case HANDSHAKE:
-        _handshake_packet(client, buffer + cursor, return_buffer, packet_max - cursor);
+        _handshake_packet(client, data);
         break;
     case STATUS:
         switch (packet)
         {
         case 0x00:
-            _status_request_packet(client, buffer + cursor, return_buffer, packet_max - cursor);
+            _status_request_packet(client, data);
             break;
         case 0x01:
-            _status_ping(client, buffer + cursor, return_buffer, packet_max - cursor);
+            _status_ping(client, data);
             break;
-        break;
         }
+        break;
     case LOGIN:
+        switch (packet)
+        {
+        case 0x00:
+            _login_start(client, data);
+            break;
+        }
         break;
     case PLAY:
         break;

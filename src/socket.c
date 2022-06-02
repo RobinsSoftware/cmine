@@ -25,8 +25,6 @@ src/socket.c
 #include <unistd.h>
 #include <string.h>
 
-#include <stdio.h>
-
 #include <cmine/arraylist.h>
 #include <cmine/socket.h>
 #include <cmine/cmine.h>
@@ -37,20 +35,19 @@ src/socket.c
 
 #include "internal.h"
 
-#define PACKET_MAX 4096
-
 volatile ArrayList connected;
 int _sid;
 
-void _out_packet_size(ClientData client, uint8_t *buffer)
+void _send_raw_packet(ClientData client, uint8_t *buffer, size_t size)
 {
-    int size = client->return_size;
     int shift = varint_size(size);
 
     memmove((buffer + shift), buffer, size);
     varint_write(size, buffer);
+    size += shift;
 
-    client->return_size = size + shift;
+    if (send(client->cid, buffer, size, 0) == -1)
+        client->terminate = true;
 }
 
 Thread _client_init(void *arg)
@@ -74,32 +71,15 @@ Thread _client_init(void *arg)
         if (nbytes < 1)
             break;
 
-        printf("IN: ");
-                for (int i = 0; i < nbytes; i++)
-                printf("%x ", buffer[i]);
-                printf("\n");
+        _parse_packet(client, buffer);
 
-        _parse_packet(client, buffer, return_buffer, PACKET_MAX);
-
-        if (client->return_send)
-        {
-            client->return_send = false;
-            _out_packet_size(client, return_buffer);
-            
-            printf("OUT: ");
-                for (int i = 0; i < client->return_size; i++)
-                printf("%x ", return_buffer[i]);
-                printf("\n");
-
-            if (send(cid, return_buffer, client->return_size, 0) == -1)
-                break;
-        }
         if (client->terminate)
             break;
     }
 
     arraylist_remove_first(connected, client);
     free(client);
+
     return NULL;
 }
 

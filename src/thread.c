@@ -77,11 +77,7 @@ void *_repeating_thread(void *arg)
 
 void sleep_millis(uint64_t millis)
 {
-#ifdef _WIN32
-    Sleep(millis);
-#else
     usleep(millis * 1000);
-#endif
 }
 
 void async_once(Thread method, void* arg, uint64_t owner)

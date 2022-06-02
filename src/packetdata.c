@@ -67,13 +67,12 @@ int varlong_write(int64_t input, uint8_t* buffer) {
     return i;
 }
 
-int varint_read(int32_t* output, uint8_t* buffer, size_t buflen) {
+int varint_read(int32_t* output, uint8_t* buffer) {
     *output = 0;
     int v2 = 0;
     signed char v3;
 
     do {
-        if (v2 >= buflen) return 0;
         v3 = buffer[v2];
         *output |= (v3 & 127) << (v2++ * 7);
         if (v2 > 5) return v2;
@@ -82,13 +81,12 @@ int varint_read(int32_t* output, uint8_t* buffer, size_t buflen) {
     return v2;
 }
 
-int varlong_read(int64_t* output, uint8_t* buffer, size_t buflen) {
+int varlong_read(int64_t* output, uint8_t* buffer) {
     *output = 0;
     int v2 = 0;
     signed char v3;
 
     do {
-        if (v2 >= buflen) return 0;
         v3 = buffer[v2];
         *output |= (v3 & 127) << (v2++ * 7);
         if (v2 > 10) return v2;
@@ -98,10 +96,10 @@ int varlong_read(int64_t* output, uint8_t* buffer, size_t buflen) {
 }
 // basin code end
 
-int string_read(String buffer, String output, size_t buflen)
+int string_read(String buffer, String output)
 {
     int size;
-    int cursor = varint_read(&size, (uint8_t*) buffer, buflen);
+    int cursor = varint_read(&size, (uint8_t*) buffer);
 
     for (int i = 0; i < size; i++)
         output[i] = buffer[cursor++];
