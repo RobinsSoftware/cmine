@@ -23,10 +23,12 @@ src/in.c
 #include <stdio.h>
 #include <string.h>
 
+#include <stdio.h>
+
 #include <cmine/thread.h>
 #include <cmine/hashmap.h>
 #include <cmine/out.h>
-#include <cmine/string.h>
+#include <cmine/packetdata.h>
 
 #include "internal.h"
 
@@ -43,9 +45,13 @@ Thread _input_listener(void *arg)
     _load_default_commands();
 
     char line[1024];
-    while (true)
+    while (_active)
     {
         fgets(line, 1024, stdin);
+
+        if (strlen(line) <= 1)
+            continue;
+
         String arg0 = strtok(line, " ");
         arg0 = strtok(arg0, "\n");
 

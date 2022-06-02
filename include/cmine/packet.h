@@ -26,7 +26,7 @@ include/cmine/packet.h
 #include <stdlib.h>
 #include <stdbool.h>
 
-#include <cmine/string.h>
+#include <cmine/packetdata.h>
 #include <cmine/socket.h>
 
 #ifdef __cplusplus
@@ -35,6 +35,7 @@ extern "C"
 #endif
 
 #define PACKET_MAX 4096
+#define CHAT_MAX 262144
 
     typedef enum PacketState
     {
@@ -49,6 +50,7 @@ extern "C"
         PacketState state;
         int protocol, cid;
         bool terminate;
+        char username[17];
     } * ClientData;
 
 #ifdef __cplusplus

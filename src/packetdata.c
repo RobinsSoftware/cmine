@@ -23,7 +23,6 @@ src/packetdata.c
 #include <stdlib.h>
 #include <string.h>
 
-#include <cmine/string.h>
 #include <cmine/packetdata.h>
 
 // https://github.com/basinserver/basin/blob/master/src/network.c
@@ -96,10 +95,10 @@ int varlong_read(int64_t* output, uint8_t* buffer) {
 }
 // basin code end
 
-int string_read(String buffer, String output)
+int string_read(uint8_t *buffer, String output)
 {
     int size;
-    int cursor = varint_read(&size, (uint8_t*) buffer);
+    int cursor = varint_read(&size, buffer);
 
     for (int i = 0; i < size; i++)
         output[i] = buffer[cursor++];
@@ -109,13 +108,129 @@ int string_read(String buffer, String output)
     return cursor;
 }
 
-int string_write(const String source, String output)
+int string_write(const String source, uint8_t *output)
 {
-    int size;
-    int cursor = varint_write(strlen(source), (uint8_t*) output);
+    int cursor = varint_write(strlen(source), output);
 
     for (int i = 0; i < strlen(source); i++)
         output[cursor++] = source[i];
 
     return cursor;
+}
+
+int bytearray_read(uint8_t *buffer, uint8_t *output)
+{
+    int size;
+    int cursor = varint_read(&size, buffer);
+
+    for (int i = 0; i < size; i++)
+        output[i] = buffer[cursor++];
+    
+    return cursor;
+}
+
+int bytearray_write(const String source, uint8_t *output, size_t size)
+{
+    int cursor = varint_write(size, output);
+
+    for (int i = 0; i < size; i++)
+        output[cursor++] = source[i];
+
+    return cursor;
+}
+
+union _short_conversion
+{
+    short s;
+    uint8_t a[2];
+};
+
+union _int_conversion
+{
+    int i;
+    uint8_t a[2];
+};
+
+union _long_conversion
+{
+    long l;
+    uint8_t a[8];
+};
+
+union _float_conversion
+{
+    float f;
+    uint8_t a[4];
+};
+
+union _double_conversion
+{
+    float d;
+    uint8_t a[8];
+};
+
+
+int short_write(short input, String output)
+{
+    union _short_conversion c;
+    c.s = input;
+
+    for (int i = 0; i < 2; i++)
+    {
+        output[i] = c.a[i];
+    }
+
+    return 2;
+}
+
+int int_write(int input, String output)
+{
+    union _int_conversion c;
+    c.i = input;
+
+    for (int i = 0; i < 4; i++)
+    {
+        output[i] = c.a[i];
+    }
+
+    return 4;
+}
+
+int long_write(long input, String output)
+{
+    union _long_conversion c;
+    c.l = input;
+
+    for (int i = 0; i < 8; i++)
+    {
+        output[i] = c.a[i];
+    }
+
+    return 8;
+}
+
+int float_write(float input, String output)
+{
+    union _float_conversion c;
+    c.f = input;
+
+    for (int i = 0; i < 4; i++)
+    {
+        output[i] = c.a[i];
+    }
+
+    return 4;
+}
+
+int double_write(double input, String output)
+{
+    union _double_conversion c;
+    c.d = input;
+
+    for (int i = 0; i < 8; i++)
+    {
+        output[i] = c.a[i];
+    }
+
+    return 8;
 }

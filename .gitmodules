@@ -1,3 +1,0 @@
-[submodule "dependencies/json-c"]
-	path = dependencies/json-c
-	url = https://github.com/json-c/json-c

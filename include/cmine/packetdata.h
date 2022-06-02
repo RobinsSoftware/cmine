@@ -25,12 +25,14 @@ include/cmine/packetdata.h
 #include <stdint.h>
 #include <stdlib.h>
 
-#include <cmine/string.h>
+#include <cmine/packetdata.h>
 
 #ifdef __cplusplus
 extern "C"
 {
 #endif
+
+typedef char *String;
 
 extern int varint_size(int32_t input);
 extern int varint_write(int32_t input, uint8_t* buffer);
@@ -38,8 +40,8 @@ extern int varint_read(int32_t* output, uint8_t* buffer);
 extern int varlong_size(int64_t input);
 extern int varlong_write(int64_t input, uint8_t* buffer);
 extern int varlong_read(int64_t* output, uint8_t* buffer);
-extern int string_read(String buffer, String output);
-extern int string_write(const String source, String output);
+extern int string_read(uint8_t *buffer, String output);
+extern int string_write(const String source, uint8_t *output);
 
 #ifdef __cplusplus
 }

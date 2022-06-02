@@ -22,7 +22,7 @@ include/cmine/in.h
 #ifndef CM_IN_H
 #define CM_IN_H
 
-#include <cmine/string.h>
+#include <cmine/packetdata.h>
 
 #ifdef __cplusplus
 extern "C"

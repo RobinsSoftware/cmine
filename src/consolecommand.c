@@ -29,6 +29,9 @@ src/consolecommand.c
 
 ConsoleCommand _quit_console_command(String input)
 {
+    if (!_active)
+        return NULL;
+
     println("Shutting down server.");
     _active = false;
 

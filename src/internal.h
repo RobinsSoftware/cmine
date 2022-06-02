@@ -25,13 +25,14 @@ src/internal.h
 #include <cmine/thread.h>
 #include <cmine/in.h>
 #include <cmine/socket.h>
+#include <cmine/packetdata.h>
 
 #ifdef __cplusplus
 extern "C"
 {
 #endif
 
-    extern bool _active;
+    extern volatile bool _active;
 
     // listen for console commands
     extern Thread _input_listener(void *arg);

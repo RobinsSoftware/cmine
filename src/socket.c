@@ -78,7 +78,10 @@ Thread _client_init(void *arg)
     }
 
     arraylist_remove_first(connected, client);
-    free(client);
+    
+    if (client)
+        free(client);
+    client = NULL;
 
     return NULL;
 }
@@ -123,7 +126,7 @@ Thread _socket_init(void *arg)
 
     int cid = 0;
 
-    while (true)
+    while (_active)
     {
         struct sockaddr client_address;
         socklen_t size = sizeof(client_address);

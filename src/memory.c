@@ -104,7 +104,8 @@ void memory_free(void *memory)
         free(node);
     }
     
-    free(memory);
+    if (memory)
+        free(memory);
 }
 
 void memory_free_all(MemoryGroup group)

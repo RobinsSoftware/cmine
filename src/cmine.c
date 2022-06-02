@@ -30,11 +30,12 @@ src/cmine.c
 #include <cmine/hashmap.h>
 #include <cmine/memory.h>
 #include <cmine/arraylist.h>
-#include <cmine/string.h>
+#include <cmine/packetdata.h>
 
 #include "internal.h"
 
-bool _color = true, _debug, _ipv6, _help, _active = true;
+bool _color = true, _debug, _ipv6, _help;
+volatile bool _active = true;
 char _address[40] = "127.0.0.1";
 uint16_t _port = 25565;
 

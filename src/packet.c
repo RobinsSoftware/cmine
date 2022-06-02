@@ -23,12 +23,12 @@ src/packet.c
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
-
 #include <stdio.h>
 
 #include <cmine/packet.h>
 #include <cmine/socket.h>
 #include <cmine/out.h>
+#include <cmine/cmine.h>
 #include <cmine/packetdata.h>
 
 #include "internal.h"
@@ -41,7 +41,7 @@ void _handshake_packet(ClientData client, uint8_t *buffer)
     int cursor = varint_read(&protocol, buffer);
 
     char address[256];
-    cursor += string_read((String)(buffer + cursor), address);
+    cursor += string_read(buffer + cursor, address);
 
     short port = ((unsigned short)buffer[cursor] << 8) | (unsigned char)buffer[cursor + 1];
     cursor += 2;
@@ -60,7 +60,7 @@ void _status_response_packet(ClientData client) // cb 0x00
     int cursor = varint_write(0x00, buffer);
 
     String motd = "{\"version\": {\"name\": \"CMine 1.18.2\",\"protocol\": 758},\"players\":{\"max\": 10,\"online\": 1,\"sample\": [{\"name\": \"lola_0x4dd\",\"id\": \"f89dd8c0-47d4-47e5-aece-6fdc06dd9b6d\"}]},\"description\": {\"text\": \"CMine Test\"}}";
-    cursor += string_write(motd, (String)(buffer + cursor));
+    cursor += string_write(motd, buffer + cursor);
 
     _send_raw_packet(client, buffer, cursor);
 }
@@ -87,14 +87,37 @@ void _status_ping(ClientData client, uint8_t *buffer) // sb 0x01
 
 // LOGIN
 
-void _login_start(ClientData client, uint8_t *buffer)
+void _login_disconnect(ClientData client, String message)
 {
-    char username[17];
-    string_read((String)buffer, username);
+    uint8_t buffer[PACKET_MAX];
+    int cursor = varint_write(0x00, buffer);
+    
+    struct json_object *json, *msg;
 
-    print("Login request from: ");
-    printf("%s", username);
-    end_line();
+    cursor+= string_write("{\"text\":\"Packets are working\n <3\"}", buffer + cursor);
+
+    if (_debug)
+    {
+        print_debug("Disconnecting: ");
+        printf("%s", client->username);
+        end_line();
+    }
+
+    _send_raw_packet(client, buffer, cursor);
+}
+
+void _login_start(ClientData client, uint8_t *buffer) // cb 0x00
+{
+    string_read(buffer, client->username);
+
+    if (_debug)
+    {
+        print_debug("Connecting: ");
+        printf("%s", client->username);
+        end_line();
+    }
+
+    _login_disconnect(client, "");
 
     client->terminate = true; // temp
 }

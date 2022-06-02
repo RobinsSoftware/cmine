@@ -26,7 +26,7 @@ src/hashmap.c
 #include <cmine/out.h>
 #include <cmine/hashmap.h>
 #include <cmine/memory.h>
-#include <cmine/string.h>
+#include <cmine/packetdata.h>
 
 HashMapNode _hashmap_get_node(HashMap map, void *key)
 {
