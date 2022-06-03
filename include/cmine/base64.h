@@ -19,8 +19,8 @@ include/cmine/cmine.h
 
 */
 
-#ifndef CMINE_H
-#define CMINE_H
+#ifndef CM_BASE64_H
+#define CM_BASE64_H
 
 #include <stdint.h>
 #include <stdbool.h>
@@ -30,7 +30,7 @@ extern "C"
 {
 #endif
 
-    extern char *base64_encode(const unsigned char *data, size_t input_length);
+    extern char *base64_encode(const unsigned char *data, size_t input_length, size_t *output_length);
 
 #ifdef __cplusplus
 }

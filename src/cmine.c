@@ -19,10 +19,13 @@ src/cmine.c
 
 */
 
+#include <unistd.h>
+#include <sys/stat.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
 #include <stdbool.h>
+#include <string.h>
 
 #include <cmine/cmine.h>
 #include <cmine/out.h>
@@ -31,12 +34,15 @@ src/cmine.c
 #include <cmine/memory.h>
 #include <cmine/arraylist.h>
 #include <cmine/packetdata.h>
+#include <cmine/base64.h>
 
 #include "internal.h"
 
-bool _color = true, _debug, _ipv6, _help;
+bool _color = true, _debug, _ipv6, _help, _use_icon;
 volatile bool _active = true;
 char _address[40] = "127.0.0.1";
+String _icon;
+size_t _icon_size;
 uint16_t _port = 25565;
 
 extern void _process_args(int argc, String argv[]);
@@ -45,7 +51,8 @@ int main(int argc, String argv[])
 {
     _process_args(argc, argv);
 
-    if (_help) {
+    if (_help)
+    {
         printf("> CMine Launch Flags <\
         \n-a <address> - Set server address (default: 127.0.0.1.)\
         \n-p <port> - Set server port (default: 25565.)\
@@ -67,10 +74,30 @@ int main(int argc, String argv[])
     printf("%s:%d.", _address, _port);
     end_line();
 
+    // load icon
+    if (!access("server-icon.png", F_OK))
+    {
+        _use_icon = true;
+        struct stat st;
+        stat("server-icon.png", &st);
+        int size = st.st_size;
+
+        char buffer[size];
+        FILE *file = fopen("server-icon.png", "r");
+        fread(buffer, size, 1, file);
+
+        _icon = calloc(1, size);
+
+        String tmp = base64_encode((const unsigned char *)buffer, size, &_icon_size);
+        tmp[_icon_size] = '\0';
+        memcpy(_icon, tmp, _icon_size + 1);
+    }
+
     void _update_status();
 
-    async_once((Thread) &_socket_init, NULL, 0);
-    async_once((Thread) &_input_listener, NULL, 0);
+    // start
+    async_once((Thread)&_socket_init, NULL, 0);
+    async_once((Thread)&_input_listener, NULL, 0);
 
     while (_active);
 
@@ -80,6 +107,8 @@ int main(int argc, String argv[])
 
     println_debug("Freeing leftover memory (end of program).");
     memory_free_all(END_OF_PROGRAM);
+
+    free(_icon);
 
     return 0;
 }

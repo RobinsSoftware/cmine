@@ -32,6 +32,10 @@ extern "C"
 {
 #endif
 
+    extern bool _use_icon;
+    extern String _icon;
+    extern size_t _icon_size;
+
     extern volatile bool _active;
 
     // listen for console commands

@@ -81,6 +81,17 @@ void _status_response_packet(ClientData client) // cb 0x00
     json_object_object_add(version, "protocol", json_object_new_int(758));
     json_object_object_add(status, "version", version);
 
+    // favicon
+    struct json_object *favicon;
+    if (_use_icon)
+    {
+        // enough room for an icon 
+        char icon_buffer[24 + _icon_size];
+        sprintf(icon_buffer, "%s%s", "data:image/png;base64,", _icon);
+        favicon = json_object_new_string(icon_buffer);
+        json_object_object_add(status, "favicon", favicon);
+    }
+
     cursor += string_write((String)json_object_to_json_string_ext(status, JSON_C_TO_STRING_PLAIN), buffer + cursor);
 
     _send_raw_packet(client, buffer, cursor);
